@@ -8,39 +8,56 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+using namespace juce;
 //==============================================================================
 NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
-{
-    addAndMakeVisible(driveSlider = new juce::Slider("Drive"));
-    driveSlider->Slider::setSliderStyle(juce::Slider::LinearBarVertical);
-    driveSlider->Slider::setTextBoxStyle(juce::Slider::NoTextBox,false,100,100);
+ {
+   /*
+    for (int i = 0; i < 3;i++) {
+        
+        addAndMakeVisible(sval[i] = new Slider(paramNames[i]));
+        sval[i]->Slider::setSliderStyle(Slider::LinearBarVertical);
+        sval[i]->Slider::setTextBoxStyle(Slider::NoTextBox, false, 100, 100);
+       
+        addAndMakeVisible(slabel[i] = new Label(labelNames[i]));
+        slabel[i]->Label::setText(paramNames[i], dontSendNotification);
+        slabel[i]->Label::attachToComponent(sval[i], true);
+
+        //apvts[i] = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), statenames[i], *sval[i]);
+
+    }
+    */
+
+    addAndMakeVisible(driveSlider = new Slider("Drive"));
+    driveSlider->Slider::setSliderStyle(Slider::LinearBarVertical);
+    driveSlider->Slider::setTextBoxStyle(Slider::NoTextBox,false,100,100);
     
-    addAndMakeVisible(driveLabel=new juce::Label("driveLabel"));
-    driveLabel->Label::setText("Drive", juce::dontSendNotification);
+    addAndMakeVisible(driveLabel=new Label("driveLabel"));
+    driveLabel->Label::setText("Drive", dontSendNotification);
     driveLabel->Label::attachToComponent(driveSlider, true);
 
-    addAndMakeVisible(gainSlider = new juce::Slider("Gain"));
-    gainSlider->Slider::setSliderStyle(juce::Slider::LinearBarVertical);
-    gainSlider->Slider::setTextBoxStyle(juce::Slider::NoTextBox, false, 100, 100);
+    addAndMakeVisible(gainSlider = new Slider("Gain"));
+    gainSlider->Slider::setSliderStyle(Slider::LinearBarVertical);
+    gainSlider->Slider::setTextBoxStyle(Slider::NoTextBox, false, 100, 100);
     
-    addAndMakeVisible(gainLabel = new juce::Label("gainLabel"));
-    gainLabel->Label::setText("Gain", juce::dontSendNotification);
+    addAndMakeVisible(gainLabel = new Label("gainLabel"));
+    gainLabel->Label::setText("Gain", dontSendNotification);
     gainLabel->Label::attachToComponent(gainSlider, true);
     
-    addAndMakeVisible(volumeSlider = new juce::Slider("Volume"));
-    volumeSlider->Slider::setSliderStyle(juce::Slider::LinearBarVertical);
-    volumeSlider->Slider::setTextBoxStyle(juce::Slider::NoTextBox, false, 100, 100);
+    addAndMakeVisible(volumeSlider = new Slider("Volume"));
+    volumeSlider->Slider::setSliderStyle(Slider::LinearBarVertical);
+    volumeSlider->Slider::setTextBoxStyle(Slider::NoTextBox, false, 100, 100);
     
-    addAndMakeVisible(volumeLabel = new juce::Label("volumeLabel"));
-    volumeLabel->Label::setText("Volume", juce::dontSendNotification);
+    addAndMakeVisible(volumeLabel = new Label("volumeLabel"));
+    volumeLabel->Label::setText("Volume", dontSendNotification);
     volumeLabel->Label::attachToComponent(volumeSlider, true);
+    
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    driveAttachment = new juce::AudioProcessorValueTreeState::SliderAttachment(p.getState(),"drive", *driveSlider);
-    gainAttachment = new juce::AudioProcessorValueTreeState::SliderAttachment(p.getState(), "gain", *gainSlider);
-    volumeAttachment = new juce::AudioProcessorValueTreeState::SliderAttachment(p.getState(), "volume", *volumeSlider);
+    driveAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(),"drive", *driveSlider);
+    gainAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), "gain", *gainSlider);
+    volumeAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), "volume", *volumeSlider);
 
 
     setSize (300, 200);
@@ -51,14 +68,14 @@ NewProjectAudioProcessorEditor::~NewProjectAudioProcessorEditor()
 }
 
 //==============================================================================
-void NewProjectAudioProcessorEditor::paint (juce::Graphics& g)
+void NewProjectAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 
-    g.setColour (juce::Colours::white);
+    g.setColour (Colours::white);
     g.setFont (15.0f);
-    //g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    //g.drawFittedText ("Hello World!", getLocalBounds(), Justification::centred, 1);
 }
 
 void NewProjectAudioProcessorEditor::resized()

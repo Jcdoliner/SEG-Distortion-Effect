@@ -23,13 +23,13 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 #endif
 {
     state = new juce::AudioProcessorValueTreeState(*this, nullptr);
-    state->createAndAddParameter("drive", "Drive", "Drive", juce:: NormalisableRange<float>(0.f, 1.f, 0.01f), 0.f, nullptr, nullptr);
-    state->createAndAddParameter("gain", "Gain", "Gain", juce::NormalisableRange<float>(1.f, 150.f, 0.01f), 0.f, nullptr, nullptr);
-    state->createAndAddParameter("volume", "Volume", "Volume", juce::NormalisableRange<float>(0.01f, 1.f, 0.01f), 0.f, nullptr, nullptr);
+    state->createAndAddParameter(statenames[0], paramNames[0], paramNames[0], juce::NormalisableRange<float>(0.f, 1.f, 0.01f), 0.f, nullptr, nullptr);
+    state->createAndAddParameter(statenames[1], paramNames[1], paramNames[1], juce::NormalisableRange<float>(1.f, 150.f, 0.01f), 0.f, nullptr, nullptr);
+    state->createAndAddParameter(statenames[2], paramNames[2], paramNames[2], juce::NormalisableRange<float>(0.01f, 1.f, 0.01f), 0.f, nullptr, nullptr);
     
-    state->state = juce::ValueTree("drive");
-    state->state = juce::ValueTree("gain");
-    state->state = juce::ValueTree("volume");
+    state->state = juce::ValueTree(statenames[0]);
+    state->state = juce::ValueTree(statenames[1]);
+    state->state = juce::ValueTree(statenames[2]);
 }
 
 NewProjectAudioProcessor::~NewProjectAudioProcessor()
@@ -158,15 +158,16 @@ void NewProjectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    float drive = *state->getRawParameterValue("drive");
-    float gain = *state->getRawParameterValue("gain");
-    float volume = *state->getRawParameterValue("volume");
+    float drive = *state->getRawParameterValue(statenames[0]);
+    float gain = *state->getRawParameterValue(statenames[1]);
+    float volume = *state->getRawParameterValue(statenames[2]);
     float distcontant = (gain / (200 * (gain/3)));
     float s;
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
         for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
+
             s++;
             float cleanSig = *channelData;
             *channelData *= drive*gain;
@@ -179,9 +180,7 @@ void NewProjectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
             //*channelData = ((volume ) * ((cleanSig / 2) + ((sinf(*channelData * 50)) / 8)));
             //*channelData = ((volume +distcontant) * ((cleanSig / 2) + ((sinf(*channelData * 50)) / 8)));
             //*channelData = ((volume / 2) * (((PIOVER2) * (atanf(*channelData))) + (cleanSig / 2) - ((sinf(*channelData*(sinf(cleanSig)) * 50)) / 8)));
-            if (s == 10000) {
-                s = 0;
-            };
+            
             channelData++;
         }
         

@@ -10,32 +10,47 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#define sliderN 3
+ 
+
+using namespace juce;
+
 //==============================================================================
 /**
 */
-class NewProjectAudioProcessorEditor  : public juce::AudioProcessorEditor
+class NewProjectAudioProcessorEditor  : public AudioProcessorEditor
 {
 public:
     NewProjectAudioProcessorEditor (NewProjectAudioProcessor&);
     ~NewProjectAudioProcessorEditor() override;
 
+
+    //std::string statecaps[sliderN] = { "drive","gain","volume" };
     //==============================================================================
-    void paint (juce::Graphics&) override;
+    void paint (Graphics&) override;
     void resized() override;
 
 private:
-    juce::ScopedPointer<juce::Slider> driveSlider;
-    juce::ScopedPointer<juce::Slider> gainSlider;
-    juce::ScopedPointer<juce::Slider> volumeSlider;
+    
+  
+    const char* paramNames[sliderN] = { "Drive","Gain","Volume" };
+    const char* labelNames[sliderN] = { "driveLabel","gainLabel","volumeLabel" };
+    const char* statenames[sliderN] = { "drive","gain","volume" };
 
-    juce::ScopedPointer<juce::Label> gainLabel;
-    juce::ScopedPointer<juce::Label> volumeLabel;
-    juce::ScopedPointer<juce::Label> driveLabel;
+    ScopedPointer<Slider> driveSlider, gainSlider, volumeSlider;
+    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment>volumeAttachment, gainAttachment, driveAttachment;
+    ScopedPointer<Label> driveLabel, volumeLabel, gainLabel;
 
 
-    juce::ScopedPointer<juce::AudioProcessorValueTreeState::SliderAttachment>driveAttachment;
-    juce::ScopedPointer<juce::AudioProcessorValueTreeState::SliderAttachment>gainAttachment;
-    juce::ScopedPointer<juce::AudioProcessorValueTreeState::SliderAttachment>volumeAttachment;
+    //const char* paramNames[sliderN] = {"driveSlider","gainSlider","volumeSlider"};
+    //const char* labelNames[sliderN] = { "driveLabel","gainLabel","volumeLabel" };
+    ScopedPointer<Slider> sval[sliderN] = {driveSlider, gainSlider, volumeSlider };
+    ScopedPointer<Label> slabel[sliderN]={driveLabel, gainLabel, volumeLabel};
+    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> apvts[3] = { driveAttachment,gainAttachment,volumeAttachment };
+
+
+    
+    
 
 
 

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#define sliderN 3
 //==============================================================================
 /**
 */
@@ -58,7 +59,9 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     juce::AudioProcessorValueTreeState& getState();
 private:
-    
+    const char* paramNames[sliderN] = { "Drive","Gain","Volume" };
+    const char* statenames[sliderN] = { "drive","gain","volume" };
+
     juce::ScopedPointer<juce::AudioProcessorValueTreeState> state;
 
     //==============================================================================
