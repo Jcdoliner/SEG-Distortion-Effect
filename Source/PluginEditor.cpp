@@ -28,6 +28,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
 
     }
     */
+    //distFunction.onChange = [this] { styleMenuChanged(); };
 
     addAndMakeVisible(driveSlider = new Slider("Drive"));
     driveSlider->Slider::setSliderStyle(Slider::LinearBarVertical);
@@ -35,7 +36,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
     
     addAndMakeVisible(driveLabel=new Label("driveLabel"));
     driveLabel->Label::setText("Drive", dontSendNotification);
-    driveLabel->Label::attachToComponent(driveSlider, true);
+    driveLabel->Label::attachToComponent(driveSlider, false);
 
     addAndMakeVisible(gainSlider = new Slider("Gain"));
     gainSlider->Slider::setSliderStyle(Slider::LinearBarVertical);
@@ -43,7 +44,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
     
     addAndMakeVisible(gainLabel = new Label("gainLabel"));
     gainLabel->Label::setText("Gain", dontSendNotification);
-    gainLabel->Label::attachToComponent(gainSlider, true);
+    gainLabel->Label::attachToComponent(gainSlider, false);
     
     addAndMakeVisible(volumeSlider = new Slider("Volume"));
     volumeSlider->Slider::setSliderStyle(Slider::LinearBarVertical);
@@ -51,13 +52,22 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
     
     addAndMakeVisible(volumeLabel = new Label("volumeLabel"));
     volumeLabel->Label::setText("Volume", dontSendNotification);
-    volumeLabel->Label::attachToComponent(volumeSlider, true);
+    volumeLabel->Label::attachToComponent(volumeSlider, false);
     
+    addAndMakeVisible(distFunction);//= new ComboBox("distFunction"));
+
+    distFunction.addItem("OverDrive", 1);
+    distFunction.addItem("Crunch", 2);
+    distFunction.addItem("Dist", 3);
+
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+
+    distFunctionAttachment = new AudioProcessorValueTreeState::ComboBoxAttachment(p.getState(), "distFuncAtt",distFunction);
     driveAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(),"drive", *driveSlider);
     gainAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), "gain", *gainSlider);
     volumeAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), "volume", *volumeSlider);
+
 
 
     setSize (300, 200);
@@ -82,8 +92,11 @@ void NewProjectAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    int sliderpos = ((getWidth() / 2)) - (100);
-    driveSlider->setBounds(sliderpos,((getHeight()/2)-(100/2)),10,100);
-    gainSlider->setBounds(sliderpos+100, ((getHeight() / 2) - (100 / 2)), 10, 100);
-    volumeSlider->setBounds(sliderpos + 200, ((getHeight() / 2) - (100 / 2)), 10, 100);
+    int xhalf = ((getWidth() / 2)) - (125);
+    int yhalf = (getHeight() / 2);
+    int sliderWidth = 50;
+    driveSlider->setBounds(xhalf,(yhalf-70), sliderWidth,yhalf+20);
+    gainSlider->setBounds(xhalf+100, (yhalf-70), sliderWidth, yhalf+20);
+    volumeSlider->setBounds(xhalf + 200, (yhalf-70), sliderWidth, yhalf+20);
+    distFunction.setBounds(xhalf, (yhalf + 70),getWidth()-70, 20);
 }

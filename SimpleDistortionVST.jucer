@@ -5,10 +5,13 @@
               jucerFormatVersion="1" companyName="SEG">
   <MAINGROUP id="ZHIb9H" name="SimpleDistortionVST">
     <GROUP id="{56E75E7B-A97B-A7AA-6A81-C627152510A7}" name="Source">
+      <FILE id="yFLxHN" name="distFunctions.h" compile="0" resource="0" file="Source/distFunctions.h"/>
       <FILE id="TghBKj" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="O2FF0d" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
+      <FILE id="MMDeif" name="distFunctions.cpp" compile="1" resource="0"
+            file="Source/distFunctions.cpp"/>
       <FILE id="edH9pN" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="heiNvK" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>

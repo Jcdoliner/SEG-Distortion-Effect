@@ -7,6 +7,8 @@
 */
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "distFunctions.h"
+
 
 
 //==============================================================================
@@ -26,10 +28,16 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
     state->createAndAddParameter(statenames[0], paramNames[0], paramNames[0], juce::NormalisableRange<float>(0.f, 1.f, 0.01f), 0.f, nullptr, nullptr);
     state->createAndAddParameter(statenames[1], paramNames[1], paramNames[1], juce::NormalisableRange<float>(1.f, 150.f, 0.01f), 0.f, nullptr, nullptr);
     state->createAndAddParameter(statenames[2], paramNames[2], paramNames[2], juce::NormalisableRange<float>(0.01f, 1.f, 0.01f), 0.f, nullptr, nullptr);
-    
+    state->createAndAddParameter(statenames[3], paramNames[3], paramNames[3], juce::NormalisableRange<float>(1, 3, 1), 0.f, nullptr, nullptr);
+    //for (int i = 0; i == 3; i++) {
+    //    state->state = juce::ValueTree(statenames[i]);
+    //};
     state->state = juce::ValueTree(statenames[0]);
     state->state = juce::ValueTree(statenames[1]);
     state->state = juce::ValueTree(statenames[2]);
+    state->state = juce::ValueTree(statenames[3]);
+    
+
 }
 
 NewProjectAudioProcessor::~NewProjectAudioProcessor()
@@ -101,6 +109,29 @@ void NewProjectAudioProcessor::changeProgramName (int index, const juce::String&
 //==============================================================================
 void NewProjectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    juce::dsp::ProcessSpec spec;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = 1;
+    spec.sampleRate = sampleRate;
+    monoChain.prepare(spec); 
+    //auto HighPassCoefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(getSampleRate(), 100);
+    //auto LowPassCoefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, 5000);
+
+    auto HighPassCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(300, sampleRate, 2);//order 2 butterworth filter at 12/db Octave
+    auto LowPassCoefficients = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(5000, sampleRate, 2);//order 2 butterworth filter at 12/db Octave
+    //*monoChain.get<ChainPositions::HighPass>().coefficients =*HighPassCoefficients;
+    auto& HighPass = monoChain.get<ChainPositions::HighPass>();//
+    auto& LowPass = monoChain.get<ChainPositions::LowPass>();//
+
+    HighPass.setBypassed<0>(false);
+    *HighPass.get<0>().coefficients = *HighPassCoefficients[0];
+    //*HighPass.get<1>().coefficients = *HighPassCoefficients[1];
+    *LowPass.get<0>().coefficients = *LowPassCoefficients[0];
+    //auto& HighPass = monoChain.get<ChainPositions::HighPass>();
+    //*HighPass.get().coefficients = HighPassCoefficients;
+
+
+
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
@@ -137,55 +168,45 @@ bool NewProjectAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 }
 #endif
 
-void NewProjectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    int totalNumInputChannels = getTotalNumInputChannels();
+    int totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+        buffer.clear(i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
+
     float drive = *state->getRawParameterValue(statenames[0]);
     float gain = *state->getRawParameterValue(statenames[1]);
     float volume = *state->getRawParameterValue(statenames[2]);
-    float distcontant = (gain / (200 * (gain/3)));
-    float s;
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-        for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
+    int idx = *state->getRawParameterValue(statenames[3]);
+    float maxVal = 0;
+    float distfactor = drive * gain; //gain;
 
-            s++;
-            float cleanSig = *channelData;
-            *channelData *= drive*gain;
-            //*channelData *= drive;
-            *channelData = ((volume) * (((PIOVER2) * (atanf(*channelData))) + (cleanSig / 2)));
-            //*channelData = (volume*(((2.f /(juce::float_Pi)) * (tanf(*channelData)))+(cleanSig/2)));
-            //*channelData = ((volume+distcontant) * (((PIOVER2) * (atanf(*channelData))) + (cleanSig / 2) - ((sinf((*channelData)/200)) / 2)));
-            //*channelData = ((volume + distcontant) * (((PIOVER2) * (atanf(*channelData))) + (cleanSig / 2) - ((sinf(*channelData)) / 8)));
-            //*channelData = ((volume/(s/gain)) * (((PIOVER2) * (atanf(*channelData))) + (cleanSig / 2) - ((sinf(*channelData)) / 8)));
-            //*channelData = ((volume ) * ((cleanSig / 2) + ((sinf(*channelData * 50)) / 8)));
-            //*channelData = ((volume +distcontant) * ((cleanSig / 2) + ((sinf(*channelData * 50)) / 8)));
-            //*channelData = ((volume / 2) * (((PIOVER2) * (atanf(*channelData))) + (cleanSig / 2) - ((sinf(*channelData*(sinf(cleanSig)) * 50)) / 8)));
-            
-            channelData++;
-        }
-        
-        // ..do something to the data...
+
+
+    juce::dsp::AudioBlock<float> block(buffer);
+    auto monoBlock = block.getSingleChannelBlock(0);
+    juce::dsp::ProcessContextReplacing<float> monoContext(monoBlock);
+    monoChain.process(monoContext);
+
+    int channel = 0;
+    float* channelData = buffer.getWritePointer(0);
+    float* channelData2 = buffer.getWritePointer(1);
+
+
+
+    for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
+        float cleanSig = *channelData;
+        *channelData *= distfactor;
+        *channelData = distortionFunction(idx, *channelData, volume, cleanSig, 0);
+        *channelData2 = *channelData;
+        channelData++;
+        channelData2++;
     }
+
 }
 juce::AudioProcessorValueTreeState& NewProjectAudioProcessor::getState() {
      return *state;

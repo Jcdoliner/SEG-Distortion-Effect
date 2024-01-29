@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#define sliderN 3
+#define sliderN 4
 //==============================================================================
 /**
 */
@@ -20,7 +20,7 @@ class NewProjectAudioProcessor  : public juce::AudioProcessor
 {
 public:
     
-    const float PIOVER2= (2.f / (juce::float_Pi));
+    
     //==============================================================================
     NewProjectAudioProcessor();
     ~NewProjectAudioProcessor() override;
@@ -59,10 +59,22 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     juce::AudioProcessorValueTreeState& getState();
 private:
-    const char* paramNames[sliderN] = { "Drive","Gain","Volume" };
-    const char* statenames[sliderN] = { "drive","gain","volume" };
-
+    const char* paramNames[sliderN] = { "Drive","Gain","Volume","distFunction" };
+    const char* statenames[sliderN] = { "drive","gain","volume","distFuncAtt"};
     juce::ScopedPointer<juce::AudioProcessorValueTreeState> state;
+
+    using Filter = juce::dsp::IIR::Filter<float>;
+    using CutFilter = juce::dsp::ProcessorChain<Filter,Filter>;
+    using MonoChain = juce::dsp::ProcessorChain<CutFilter,CutFilter>;
+
+    MonoChain monoChain;
+    enum ChainPositions {
+        LowPass,
+        HighPass,
+
+
+    };
+
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewProjectAudioProcessor)

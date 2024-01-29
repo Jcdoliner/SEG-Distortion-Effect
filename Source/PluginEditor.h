@@ -32,26 +32,26 @@ public:
 
 private:
     
-  
+    // important to be pointer consts
     const char* paramNames[sliderN] = { "Drive","Gain","Volume" };
     const char* labelNames[sliderN] = { "driveLabel","gainLabel","volumeLabel" };
     const char* statenames[sliderN] = { "drive","gain","volume" };
+    //void NewProjectAudioProcessorEditor::styleMenuChanged();
+
 
     ScopedPointer<Slider> driveSlider, gainSlider, volumeSlider;
     ScopedPointer<AudioProcessorValueTreeState::SliderAttachment>volumeAttachment, gainAttachment, driveAttachment;
+    ScopedPointer<AudioProcessorValueTreeState::ComboBoxAttachment> distFunctionAttachment;
     ScopedPointer<Label> driveLabel, volumeLabel, gainLabel;
+    ComboBox distFunction;
+
 
 
     //const char* paramNames[sliderN] = {"driveSlider","gainSlider","volumeSlider"};
     //const char* labelNames[sliderN] = { "driveLabel","gainLabel","volumeLabel" };
     ScopedPointer<Slider> sval[sliderN] = {driveSlider, gainSlider, volumeSlider };
     ScopedPointer<Label> slabel[sliderN]={driveLabel, gainLabel, volumeLabel};
-    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> apvts[3] = { driveAttachment,gainAttachment,volumeAttachment };
-
-
-    
-    
-
+    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> apvts[4] = { driveAttachment,gainAttachment,volumeAttachment};
 
 
     // This reference is provided as a quick way for your editor to
