@@ -15,10 +15,11 @@ float distortionFunction(int idx, float channelData,float volume,float cleanSig,
     case 1:
         return ((volume) * (((TWOVERPI) * (atanf(channelData))) + (cleanSig * 0.5)));
     case 2:
-        
+        return  volume * (((TWOVERPI) * (atanf(channelData))) + (cleanSig * 0.1));  // 0.3989 term provides flat response
+
         return 0;//+ (cleanSig * 0.5));
     case 3:
-        return  volume*(((TWOVERPI) * (atanf(channelData)))+ (cleanSig * 0.1));  // 0.3989 term provides flat response
+        return 0;
     default:
         return 0;
 }

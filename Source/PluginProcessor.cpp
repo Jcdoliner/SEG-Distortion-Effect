@@ -25,7 +25,7 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 #endif
 {
     state = new juce::AudioProcessorValueTreeState(*this, nullptr);
-    state->createAndAddParameter(statenames[0], paramNames[0], paramNames[0], juce::NormalisableRange<float>(0.f, 1.f, 0.01f), 0.f, nullptr, nullptr);
+    state->createAndAddParameter(statenames[0], paramNames[0], paramNames[0], juce::NormalisableRange<float>(0.f, 0.1f, 0.001f), 0.f, nullptr, nullptr);
     state->createAndAddParameter(statenames[1], paramNames[1], paramNames[1], juce::NormalisableRange<float>(1.f, 150.f, 0.01f), 0.f, nullptr, nullptr);
     state->createAndAddParameter(statenames[2], paramNames[2], paramNames[2], juce::NormalisableRange<float>(0.01f, 1.f, 0.01f), 0.f, nullptr, nullptr);
     state->createAndAddParameter(statenames[3], paramNames[3], paramNames[3], juce::NormalisableRange<float>(1, 3, 1), 0.f, nullptr, nullptr);

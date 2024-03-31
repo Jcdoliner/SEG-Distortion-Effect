@@ -70,7 +70,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
 
 
 
-    setSize (300, 200);
+    setSize (700, 400);
 }
 
 NewProjectAudioProcessorEditor::~NewProjectAudioProcessorEditor()
@@ -90,13 +90,17 @@ void NewProjectAudioProcessorEditor::paint (Graphics& g)
 
 void NewProjectAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-    int xhalf = ((getWidth() / 2)) - (125);
-    int yhalf = (getHeight() / 2);
-    int sliderWidth = 50;
-    driveSlider->setBounds(xhalf,(yhalf-70), sliderWidth,yhalf+20);
-    gainSlider->setBounds(xhalf+100, (yhalf-70), sliderWidth, yhalf+20);
-    volumeSlider->setBounds(xhalf + 200, (yhalf-70), sliderWidth, yhalf+20);
-    distFunction.setBounds(xhalf, (yhalf + 70),getWidth()-70, 20);
+    //12x12 Grid
+    int xunit = (getWidth() / 12);
+    int yunit = (getHeight() / 12);
+    int xcenter = xunit * 6;
+    int ycenter = xunit * 6;
+    int sliderWidth =xunit*2;
+    int sliderHeight = yunit * 9;
+
+    volumeSlider->setBounds(2*xunit, yunit, sliderWidth, sliderHeight);
+    gainSlider->setBounds(xcenter-(xunit), yunit, sliderWidth, sliderHeight);
+    driveSlider->setBounds(xcenter+(2 * xunit), yunit, sliderWidth, sliderHeight);
+
+    distFunction.setBounds(xunit, (10.5 * yunit),xunit*10,yunit);
 }
